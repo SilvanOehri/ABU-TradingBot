@@ -1,3 +1,4 @@
+# Minimale Dependencies für Vercel Deployment
 flask==3.0.0
 yfinance==0.2.31
 pandas==2.1.3
