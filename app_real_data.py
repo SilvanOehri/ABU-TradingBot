@@ -413,10 +413,17 @@ def api_health():
     })
 
 if __name__ == '__main__':
-    print("🚀 Trading Bot mit ECHTEN 5-Jahre Backtest-Daten")
-    print("📊 Dashboard: http://localhost:8081")
-    print("⚡ Führe zuerst einen Backtest durch, dann siehst du ALLE echten Trades!")
-    
     # Use PORT from environment (for deployment) or default to 8081
     port = int(os.environ.get('PORT', 8081))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    
+    # Check if running in production (Railway sets RAILWAY_ENVIRONMENT)
+    is_production = os.environ.get('RAILWAY_ENVIRONMENT') is not None
+    
+    print("🚀 Trading Bot mit ECHTEN 5-Jahre Backtest-Daten")
+    print(f"📊 Dashboard: http://localhost:{port}")
+    print("⚡ Führe zuerst einen Backtest durch, dann siehst du ALLE echten Trades!")
+    
+    if is_production:
+        print("🚂 Running on Railway (Production Mode)")
+    
+    app.run(debug=not is_production, host='0.0.0.0', port=port)
