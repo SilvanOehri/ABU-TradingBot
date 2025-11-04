@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🤖 Trading Bot Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-robot"></i> Trading Bot Dashboard
+        </a>
+        <span class="navbar-text">
+          <i class="fas fa-chart-line"></i> Version 3.0.0
+        </span>
+      </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+      <div class="row">
+        <!-- Konfigurationspanel -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h5><i class="fas fa-cog"></i> Konfiguration</h5>
+            </div>
+            <div class="card-body">
+              <form id="configForm">
+                <div class="mb-3">
+                  <label for="symbol" class="form-label">Symbol</label>
+                  <select class="form-select" id="symbol" name="symbol">
+                    <option value="BTC-USD">Bitcoin (BTC-USD)</option>
+                    <option value="ETH-USD">Ethereum (ETH-USD)</option>
+                    <option value="AAPL">Apple (AAPL)</option>
+                    <option value="GOOGL">Google (GOOGL)</option>
+                    <option value="MSFT">Microsoft (MSFT)</option>
+                    <option value="TSLA">Tesla (TSLA)</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="initial_capital" class="form-label"
+                    >Startkapital ($)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="initial_capital"
+                    name="initial_capital"
+                    value="100000"
+                    min="1000"
+                    step="1000"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="backtest_days" class="form-label"
+                    >Tage zurück</label
+                  >
+                  <select
+                    class="form-select"
+                    id="backtest_days"
+                    name="backtest_days"
+                  >
+                    <option value="365">1 Jahr</option>
+                    <option value="730">2 Jahre</option>
+                    <option value="1095">3 Jahre</option>
+                    <option value="1825" selected>5 Jahre</option>
+                  </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fas fa-play"></i> Backtest starten
+                </button>
+
+                <a
+                  href="/compare"
+                  class="btn btn-outline-info w-100 mt-2"
+                  id="compareButton"
+                  style="display: none"
+                >
+                  <i class="fas fa-chart-area"></i> Strategien vergleichen
+                </a>
+              </form>
+            </div>
+          </div>
+
+          <!-- Status Panel -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <h5><i class="fas fa-info-circle"></i> Status</h5>
+            </div>
+            <div class="card-body">
+              <div id="statusContainer">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i> Bereit für Backtest
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ergebnisse Panel -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h5><i class="fas fa-chart-bar"></i> Backtest Ergebnisse</h5>
+            </div>
+            <div class="card-body">
+              <div id="loadingContainer" style="display: none">
+                <div class="text-center">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="mt-2">Führe Backtest durch...</p>
+                </div>
+              </div>
+
+              <div id="resultsContainer" style="display: none">
+                <!-- Market Info -->
+                <div class="row mb-4">
+                  <div class="col-md-3">
+                    <div class="card text-bg-primary">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="marketSymbol">-</h5>
+                        <p class="card-text">Symbol</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-success">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="marketStartPrice">$-</h5>
+                        <p class="card-text">Startpreis</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-info">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="marketEndPrice">$-</h5>
+                        <p class="card-text">Endpreis</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-warning">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="marketDays">-</h5>
+                        <p class="card-text">Tage</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Strategie Ergebnisse Tabelle -->
+                <div class="table-responsive">
+                  <table class="table table-striped" id="resultsTable">
+                    <thead>
+                      <tr>
+                        <th>Rang</th>
+                        <th>Strategie</th>
+                        <th>Endkapital</th>
+                        <th>Rendite</th>
+                        <th>Gewinn/Verlust</th>
+                        <th>Trades</th>
+                      </tr>
+                    </thead>
+                    <tbody id="resultsTableBody"></tbody>
+                  </table>
+                </div>
+
+                <!-- Best Strategy Alert -->
+                <div
+                  id="bestStrategyAlert"
+                  class="alert alert-success mt-3"
+                  style="display: none"
+                >
+                  <h4 class="alert-heading">
+                    <i class="fas fa-trophy"></i> Beste Strategie!
+                  </h4>
+                  <p id="bestStrategyText"></p>
+                </div>
+              </div>
+
+              <div id="errorContainer" style="display: none">
+                <div class="alert alert-danger">
+                  <h4 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle"></i> Fehler!
+                  </h4>
+                  <p id="errorText"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  </body>
+</html>

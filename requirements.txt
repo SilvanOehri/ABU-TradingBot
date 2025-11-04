@@ -1,0 +1,72 @@
+# Trading Bot Dependencies
+# =========================
+# 
+# Zentrale Abhängigkeiten für den Trading Bot
+# Installation: pip install -r requirements.txt
+#
+# Autor: Silvan
+# Datum: September 2025
+
+# Web Framework
+flask>=2.3.0                # Web Framework für Flask App
+gunicorn>=21.2.0            # WSGI HTTP Server für Production
+
+# Datenverarbeitung und Analyse
+pandas>=2.0.0              # Datenmanipulation und -analyse
+numpy>=1.24.0               # Numerische Berechnungen
+matplotlib>=3.7.0           # Plotting und Visualisierung
+seaborn>=0.12.0             # Statistische Datenvisualisierung
+
+# Finanzmarktdaten
+yfinance>=0.2.18            # Yahoo Finance API für historische Kursdaten
+
+# API und JSON
+requests>=2.31.0            # HTTP Requests
+flask-cors>=4.0.0           # CORS Support für Flask
+
+# Entwicklung und Testing
+pytest>=7.0.0               # Unit Testing Framework
+pytest-cov>=4.0.0           # Code Coverage für Tests
+
+# Logging und Konfiguration
+python-dateutil>=2.8.0      # Erweiterte Datumsverarbeitung
+
+# Performance und Optimierung
+numba>=0.57.0               # JIT Compiler für numerische Funktionen (optional)
+
+# Datenvalidierung
+pydantic>=2.0.0             # Datenvalidierung und Settings Management (optional)
+
+# Jupyter Notebooks (für Entwicklung und Analyse)
+jupyter>=1.0.0              # Jupyter Notebook
+ipywidgets>=8.0.0           # Interactive Widgets für Notebooks
+
+# Code Quality
+black>=23.0.0               # Code Formatter
+flake8>=6.0.0               # Code Linter
+isort>=5.12.0               # Import Sorter
+
+# Documentation
+sphinx>=7.0.0               # Documentation Generator (optional)
+
+# ===============================
+# BETRIEBSSYSTEM-SPEZIFISCHE ABHÄNGIGKEITEN
+# ===============================
+
+# Windows
+# pywin32>=306                # Windows API (nur für Windows)
+
+# macOS
+# keine spezifischen Abhängigkeiten
+
+# Linux
+# keine spezifischen Abhängigkeiten
+
+# ===============================
+# ENTWICKLUNGSABHÄNGIGKEITEN
+# ===============================
+# Diese können mit pip install -r requirements-dev.txt installiert werden
+
+# mypy>=1.5.0                # Static Type Checker
+# pre-commit>=3.3.0          # Git Pre-commit Hooks
+# bandit>=1.7.0              # Security Linter

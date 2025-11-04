@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🤖 Trading Bot - Strategie Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <i class="fas fa-robot"></i> Trading Bot
+        </a>
+        <div class="navbar-nav flex-row">
+          <a class="nav-link me-3" href="/">
+            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+          </a>
+          <span class="navbar-text">
+            <i class="fas fa-chart-line"></i> Strategie Details
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+      <!-- Loading Indicator -->
+      <div id="loadingContainer" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Lade Strategie-Details...</p>
+      </div>
+
+      <!-- Strategy Details Container -->
+      <div id="strategyContainer" style="display: none">
+        <!-- Strategy Header -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 id="strategyTitle">
+                  <i class="fas fa-chart-bar"></i> Strategie Details
+                </h3>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="card text-bg-primary">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="finalValue">$-</h5>
+                        <p class="card-text">Endkapital</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-success">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="returnPercentage">-%</h5>
+                        <p class="card-text">Rendite</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-info">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="profitLoss">$-</h5>
+                        <p class="card-text">Gewinn/Verlust</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-warning">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="totalTrades">-</h5>
+                        <p class="card-text">Trades</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Portfolio Performance Chart -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5><i class="fas fa-chart-line"></i> Portfolio Performance</h5>
+              </div>
+              <div class="card-body">
+                <canvas id="portfolioChart" height="100"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trade History -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5><i class="fas fa-list"></i> Trade Historie</h5>
+              </div>
+              <div class="card-body">
+                <!-- Filter Controls -->
+                <div class="row mb-3">
+                  <div class="col-md-3">
+                    <select class="form-select" id="signalFilter">
+                      <option value="all">Alle Signale</option>
+                      <option value="buy">Nur Käufe</option>
+                      <option value="sell">Nur Verkäufe</option>
+                      <option value="hold">Nur Hold</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="dateFilter"
+                      placeholder="Datum suchen (YYYY-MM-DD)"
+                    />
+                  </div>
+                  <div class="col-md-3">
+                    <button
+                      class="btn btn-outline-secondary"
+                      onclick="clearFilters()"
+                    >
+                      <i class="fas fa-times"></i> Filter zurücksetzen
+                    </button>
+                  </div>
+                  <div class="col-md-3">
+                    <span class="badge bg-info" id="tradeCount"
+                      >0 Trades angezeigt</span
+                    >
+                  </div>
+                </div>
+
+                <!-- Trade Table -->
+                <div class="table-responsive">
+                  <table
+                    class="table table-striped table-hover"
+                    id="tradeTable"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Datum</th>
+                        <th>Signal</th>
+                        <th>Preis</th>
+                        <th>Anteile Vorher</th>
+                        <th>Anteile Nachher</th>
+                        <th>Kapital Vorher</th>
+                        <th>Kapital Nachher</th>
+                        <th>Portfolio Wert</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tradeTableBody"></tbody>
+                  </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Trade History Pagination">
+                  <ul
+                    class="pagination justify-content-center"
+                    id="pagination"
+                  ></ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Container -->
+      <div id="errorContainer" style="display: none">
+        <div class="alert alert-danger">
+          <h4 class="alert-heading">
+            <i class="fas fa-exclamation-triangle"></i> Fehler!
+          </h4>
+          <p id="errorText"></p>
+          <hr />
+          <a href="/" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Strategy Details JavaScript
+      const strategyId = {{ strategy_id }};
+      let allTrades = [];
+      let filteredTrades = [];
+      let currentPage = 1;
+      const tradesPerPage = 20;
+      let portfolioChart = null;
+
+      // Load strategy details on page load
+      document.addEventListener('DOMContentLoaded', function() {
+          console.log('DOM loaded, strategy ID:', strategyId);
+          loadStrategyDetails();
+      });
+
+      async function loadStrategyDetails() {
+          console.log('⚡ ULTRA-FAST Loading strategy details for ID:', strategyId);
+          const startTime = performance.now();
+
+          try {
+              showLoading();
+              console.log('⚡ Making ultra-fast API call to:', `/api/strategy/${strategyId}`);
+
+              const response = await fetch(`/api/strategy/${strategyId}`, {
+                  method: 'GET',
+                  cache: 'no-cache',  // Verhindere Browser-Caching
+                  headers: {
+                      'Cache-Control': 'no-cache, no-store, must-revalidate',
+                      'Pragma': 'no-cache',
+                      'Expires': '0'
+                  }
+              });
+
+              console.log('⚡ API response status:', response.status);
+
+              if (!response.ok) {
+                  throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+              }
+
+              const result = await response.json();
+              const endTime = performance.now();
+              console.log(`⚡ API call completed in ${(endTime - startTime).toFixed(2)}ms`);
+              console.log('⚡ API result:', result);
+
+              if (result.success) {
+                  displayStrategyDetails(result.data);
+              } else {
+                  hideLoading();
+                  showError(result.error);
+              }
+          } catch (error) {
+              const endTime = performance.now();
+              console.error(`❌ Error after ${(endTime - startTime).toFixed(2)}ms:`, error);
+              hideLoading();
+              showError(`Netzwerkfehler: ${error.message}`);
+          }
+      }
+
+      function displayStrategyDetails(data) {
+          console.log('⚡ ULTRA-FAST Displaying strategy details');
+          const startTime = performance.now();
+
+          // Update page title and main info - minimal DOM operations
+          const titleElement = document.getElementById('strategyTitle');
+          titleElement.innerHTML = `<i class="fas fa-chart-bar"></i> ${data.strategy_name || 'Unbekannte Strategie'} - Details`;
+
+          // Batch DOM updates
+          const updates = [
+              ['finalValue', formatCurrency(data.final_value || 0)],
+              ['returnPercentage', `${(data.return_percentage || 0).toFixed(2)}%`],
+              ['profitLoss', formatCurrency(data.profit_loss || 0)],
+              ['totalTrades', data.total_trades || 0]
+          ];
+
+          updates.forEach(([id, value]) => {
+              document.getElementById(id).textContent = value;
+          });
+
+          // Color coding for performance - minimal style changes
+          const returnPct = data.return_percentage || 0;
+          const returnElement = document.getElementById('returnPercentage').parentElement.parentElement;
+          const profitElement = document.getElementById('profitLoss').parentElement.parentElement;
+
+          if (returnPct > 0) {
+              returnElement.className = 'card text-bg-success';
+              profitElement.className = 'card text-bg-success';
+          } else if (returnPct < 0) {
+              returnElement.className = 'card text-bg-danger';
+              profitElement.className = 'card text-bg-danger';
+          }
+
+          // CHART KOMPLETT DEAKTIVIERT - zeige nur einfache Info
+          const chartContainer = document.getElementById('portfolioChart').parentElement;
+          chartContainer.innerHTML = `
+              <div class="alert alert-success">
+                  <i class="fas fa-rocket"></i>
+                  <strong>Ultra-Fast Mode:</strong> Chart deaktiviert für maximale Geschwindigkeit!<br>
+                  <small>Portfolio entwickelte sich von $${formatCurrency(10000)} zu $${formatCurrency(data.final_value || 0)}</small>
+              </div>
+          `;
+
+          // Trade History - nur erste 5 Trades für maximale Geschwindigkeit
+          allTrades = (data.trade_history || []).slice(0, 5);
+          filteredTrades = [...allTrades];
+          displayTrades();
+
+          // Show container
+          document.getElementById('loadingContainer').style.display = 'none';
+          document.getElementById('strategyContainer').style.display = 'block';
+
+          const endTime = performance.now();
+          console.log(`⚡ Strategy details displayed in ${(endTime - startTime).toFixed(2)}ms`);
+      }
+
+      function createPortfolioChart(portfolioValues) {
+          const ctx = document.getElementById('portfolioChart').getContext('2d');
+
+          if (portfolioChart) {
+              portfolioChart.destroy();
+          }
+
+          // Performance-Optimierung: Reduziere Datenpunkte auf max 365 (1 Jahr) für bessere Performance
+          let sampledValues = portfolioValues;
+          let sampledLabels;
+
+          if (portfolioValues.length > 365) {
+              const sampleRate = Math.ceil(portfolioValues.length / 365);
+              sampledValues = portfolioValues.filter((_, index) => index % sampleRate === 0);
+          }
+
+          sampledLabels = sampledValues.map((_, index) => {
+              const originalIndex = index * (portfolioValues.length > 365 ? Math.ceil(portfolioValues.length / 365) : 1);
+              return `Tag ${originalIndex + 1}`;
+          });
+
+          portfolioChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: sampledLabels,
+                  datasets: [{
+                      label: 'Portfolio Wert',
+                      data: sampledValues,
+                      borderColor: 'rgb(75, 192, 192)',
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      tension: 0.1,
+                      pointRadius: 0, // Entferne Punkte für bessere Performance
+                      pointHoverRadius: 3
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  animation: {
+                      duration: 0 // Deaktiviere Animationen für bessere Performance
+                  },
+                  scales: {
+                      y: {
+                          beginAtZero: false,
+                          ticks: {
+                              callback: function(value) {
+                                  return formatCurrency(value);
+                              }
+                          }
+                      }
+                  },
+                  plugins: {
+                      tooltip: {
+                          callbacks: {
+                              label: function(context) {
+                                  return `Portfolio: ${formatCurrency(context.parsed.y)}`;
+                              }
+                          }
+                      }
+                  }
+              }
+          });
+      }
+
+      function displayTrades() {
+          const startIndex = (currentPage - 1) * tradesPerPage;
+          const endIndex = startIndex + tradesPerPage;
+          const tradesToShow = filteredTrades.slice(startIndex, endIndex);
+
+          const tbody = document.getElementById('tradeTableBody');
+          tbody.innerHTML = '';
+
+          tradesToShow.forEach(trade => {
+              const row = createTradeRow(trade);
+              tbody.appendChild(row);
+          });
+
+          updateTradeCount();
+          updatePagination();
+      }
+
+      function createTradeRow(trade) {
+          const row = document.createElement('tr');
+
+          const signalBadge = getSignalBadge(trade.signal);
+
+          row.innerHTML = `
+              <td>${trade.date || 'N/A'}</td>
+              <td>${signalBadge}</td>
+              <td>${formatCurrency(trade.price || 0)}</td>
+              <td>${(trade.shares_before || 0).toFixed(4)}</td>
+              <td>${(trade.shares_after || 0).toFixed(4)}</td>
+              <td>${formatCurrency(trade.capital_before || 0)}</td>
+              <td>${formatCurrency(trade.capital_after || 0)}</td>
+              <td><strong>${formatCurrency(trade.portfolio_value || 0)}</strong></td>
+          `;
+
+          return row;
+      }
+
+      function getSignalBadge(signal) {
+          switch(signal) {
+              case 'buy':
+                  return '<span class="badge bg-success"><i class="fas fa-arrow-up"></i> BUY</span>';
+              case 'sell':
+                  return '<span class="badge bg-danger"><i class="fas fa-arrow-down"></i> SELL</span>';
+              case 'hold':
+                  return '<span class="badge bg-secondary"><i class="fas fa-hand-paper"></i> HOLD</span>';
+              default:
+                  return `<span class="badge bg-secondary">${signal.toUpperCase()}</span>`;
+          }
+      }
+
+      function updateTradeCount() {
+          document.getElementById('tradeCount').textContent =
+              `${filteredTrades.length} Trades angezeigt`;
+      }
+
+      function updatePagination() {
+          const totalPages = Math.ceil(filteredTrades.length / tradesPerPage);
+          const pagination = document.getElementById('pagination');
+          pagination.innerHTML = '';
+
+          if (totalPages <= 1) return;
+
+          // Previous button
+          const prevLi = document.createElement('li');
+          prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+          prevLi.innerHTML = '<a class="page-link" href="#" onclick="changePage(-1)">Vorherige</a>';
+          pagination.appendChild(prevLi);
+
+          // Page numbers
+          for (let i = 1; i <= totalPages; i++) {
+              if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                  const li = document.createElement('li');
+                  li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                  li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>`;
+                  pagination.appendChild(li);
+              } else if (i === currentPage - 3 || i === currentPage + 3) {
+                  const li = document.createElement('li');
+                  li.className = 'page-item disabled';
+                  li.innerHTML = '<span class="page-link">...</span>';
+                  pagination.appendChild(li);
+              }
+          }
+
+          // Next button
+          const nextLi = document.createElement('li');
+          nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+          nextLi.innerHTML = '<a class="page-link" href="#" onclick="changePage(1)">Nächste</a>';
+          pagination.appendChild(nextLi);
+      }
+
+      function changePage(direction) {
+          const totalPages = Math.ceil(filteredTrades.length / tradesPerPage);
+          const newPage = currentPage + direction;
+
+          if (newPage >= 1 && newPage <= totalPages) {
+              currentPage = newPage;
+              displayTrades();
+          }
+      }
+
+      function goToPage(page) {
+          currentPage = page;
+          displayTrades();
+      }
+
+      // Filter functions
+      document.getElementById('signalFilter').addEventListener('change', function() {
+          applyFilters();
+      });
+
+      document.getElementById('dateFilter').addEventListener('input', function() {
+          applyFilters();
+      });
+
+      function applyFilters() {
+          const signalFilter = document.getElementById('signalFilter').value;
+          const dateFilter = document.getElementById('dateFilter').value;
+
+          filteredTrades = allTrades.filter(trade => {
+              const signalMatch = signalFilter === 'all' || trade.signal === signalFilter;
+              const dateMatch = !dateFilter || trade.date.includes(dateFilter);
+              return signalMatch && dateMatch;
+          });
+
+          currentPage = 1;
+          displayTrades();
+      }
+
+      function clearFilters() {
+          document.getElementById('signalFilter').value = 'all';
+          document.getElementById('dateFilter').value = '';
+          filteredTrades = [...allTrades];
+          currentPage = 1;
+          displayTrades();
+      }
+
+      function showError(error) {
+          document.getElementById('errorText').textContent = error;
+          document.getElementById('loadingContainer').style.display = 'none';
+          document.getElementById('errorContainer').style.display = 'block';
+      }
+
+      function formatCurrency(value) {
+          return new Intl.NumberFormat('de-DE', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+          }).format(value);
+      }
+    </script>
+  </body>
+</html>
