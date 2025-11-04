@@ -11,6 +11,7 @@ from src.strategies.advanced_strategies import (
 )
 from datetime import datetime, timedelta
 import logging
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -415,4 +416,7 @@ if __name__ == '__main__':
     print("🚀 Trading Bot mit ECHTEN 5-Jahre Backtest-Daten")
     print("📊 Dashboard: http://localhost:8081")
     print("⚡ Führe zuerst einen Backtest durch, dann siehst du ALLE echten Trades!")
-    app.run(debug=True, host='0.0.0.0', port=8081)
+    
+    # Use PORT from environment (for deployment) or default to 8081
+    port = int(os.environ.get('PORT', 8081))
+    app.run(debug=True, host='0.0.0.0', port=port)
