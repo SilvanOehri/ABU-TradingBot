@@ -1,0 +1,30 @@
+# Ignore Vercel files
+.vercel
+vercel.json
+api/
+
+# Ignore development files
+requirements-dev.txt
+requirements-full.txt
+*.pyc
+__pycache__/
+.pytest_cache/
+.coverage
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+
+# Ignore virtual environments
+venv/
+env/
+ENV/
