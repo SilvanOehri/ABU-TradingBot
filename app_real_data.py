@@ -57,6 +57,9 @@ class TradingBotAPI:
             self.period = f"{backtest_days}d"
             self.initial_capital = config_data.get('initial_capital', 100000)
             
+            logger.info(f"🚀 Starte Backtest für {self.symbol}")
+            logger.info(f"📊 Parameter: {backtest_days} Tage, ${self.initial_capital} Startkapital")
+            
             # Create config object
             config = TradingConfig(
                 symbol=self.symbol,
@@ -65,13 +68,24 @@ class TradingBotAPI:
             )
             
             # Get market data
+            logger.info(f"📥 Lade Marktdaten für {config.symbol}...")
             data_provider = DataProvider()
-            prices = data_provider.get_stock_data(config.symbol, backtest_days)
             
-            if len(prices) < 100:
+            try:
+                prices = data_provider.get_stock_data(config.symbol, backtest_days)
+                logger.info(f"✅ {len(prices)} Preise erfolgreich geladen")
+            except Exception as data_error:
+                logger.error(f"❌ Fehler beim Laden der Marktdaten: {str(data_error)}")
                 return {
                     'success': False,
-                    'error': 'Nicht genügend Marktdaten verfügbar'
+                    'error': f'Fehler beim Laden der Marktdaten: {str(data_error)}'
+                }
+            
+            if len(prices) < 100:
+                logger.warning(f"⚠️ Zu wenig Daten: {len(prices)} < 100")
+                return {
+                    'success': False,
+                    'error': f'Nicht genügend Marktdaten verfügbar ({len(prices)} Tage, mindestens 100 erforderlich)'
                 }
             
             # Cache prices for later use
@@ -105,7 +119,7 @@ class TradingBotAPI:
             # Convert results to dict format for JSON response
             results_data = []
             for i, result in enumerate(results):
-                logger.info(f"📊 Dashboard: Strategy {i} = {result.strategy_name} mit {result.return_percentage:.2f}% Rendite")
+                logger.info(f"Dashboard: Strategy {i} = {result.strategy_name} mit {result.return_percentage:.2f}% Rendite")
                 results_data.append({
                     'id': result.id,
                     'strategy_name': result.strategy_name,
@@ -283,7 +297,7 @@ def api_get_strategy_details(strategy_id):
         # RESPONSE mit allen ECHTEN Daten - DEBUGGING
         response_data = {
             'strategy_name': result.strategy_name,
-            'description': f'{result.strategy_name} - {len(trade_history)} Tage Backtest mit echten Marktdaten',
+            'description': result.description if hasattr(result, 'description') else '',
             'final_value': result.final_value,
             'return_percentage': result.return_percentage,
             'portfolio_values': result.portfolio_values,
@@ -392,7 +406,6 @@ def api_get_symbols():
         {'symbol': 'BTC-USD', 'name': 'Bitcoin', 'type': 'Crypto'},
         {'symbol': 'ETH-USD', 'name': 'Ethereum', 'type': 'Crypto'},
         {'symbol': 'AAPL', 'name': 'Apple Inc.', 'type': 'Stock'},
-        {'symbol': 'GOOGL', 'name': 'Alphabet Inc.', 'type': 'Stock'},
         {'symbol': 'MSFT', 'name': 'Microsoft Corporation', 'type': 'Stock'},
         {'symbol': 'TSLA', 'name': 'Tesla Inc.', 'type': 'Stock'},
         {'symbol': 'NVDA', 'name': 'NVIDIA Corporation', 'type': 'Stock'},
@@ -419,9 +432,9 @@ if __name__ == '__main__':
     # Check if running in production (Railway sets RAILWAY_ENVIRONMENT)
     is_production = os.environ.get('RAILWAY_ENVIRONMENT') is not None
     
-    print("🚀 Trading Bot mit ECHTEN 5-Jahre Backtest-Daten")
-    print(f"📊 Dashboard: http://localhost:{port}")
-    print("⚡ Führe zuerst einen Backtest durch, dann siehst du ALLE echten Trades!")
+    print("🤖 Trading Bot mit ECHTEN 5-Jahre Backtest-Daten")
+    print(f"Dashboard: http://localhost:{port}")
+    print("Führe zuerst einen Backtest durch, dann siehst du ALLE echten Trades!")
     
     if is_production:
         print("🚂 Running on Railway (Production Mode)")

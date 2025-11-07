@@ -14,7 +14,12 @@ class SMAStrategy(BaseStrategy):
     """
     
     def __init__(self, short_period: int = 10, long_period: int = 30):
-        super().__init__("SMA", "📈")
+        super().__init__(
+            "SMA",
+            description="SMA (Simple Moving Average) vergleicht zwei Durchschnittspreise. "
+                       "Wenn der kurzfristige (10 Tage) über den langfristigen (30 Tage) steigt, ist das ein Kaufsignal. "
+                       "Wenn er darunter fällt, wird verkauft. Folgt dem Trend."
+        )
         self.short_period = short_period
         self.long_period = long_period
     

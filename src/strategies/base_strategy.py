@@ -10,9 +10,10 @@ class BaseStrategy(ABC):
     Abstrakte Basisklasse für alle Trading Strategien
     """
     
-    def __init__(self, name: str, emoji: str = "📊"):
+    def __init__(self, name: str, emoji: str = "", description: str = ""):
         self.name = name
         self.emoji = emoji
+        self.description = description
         self.trades_count = 0
     
     @abstractmethod
@@ -29,8 +30,10 @@ class BaseStrategy(ABC):
         pass
     
     def get_display_name(self) -> str:
-        """Gibt den Anzeigenamen mit Emoji zurück"""
-        return f"{self.emoji} {self.name}"
+        """Gibt den Anzeigenamen zurück"""
+        if self.emoji:
+            return f"{self.emoji} {self.name}"
+        return self.name
     
     def reset(self):
         """Setzt die Strategie zurück"""

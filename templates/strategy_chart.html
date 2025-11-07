@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📈 Trading Bot - Strategy Chart</title>
+    <title>Trading Bot - Strategy Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       * {
@@ -173,7 +173,7 @@
   <body>
     <div class="header">
       <div class="container">
-        <h1>📈 Trading Bot - Strategy Performance</h1>
+        <h1>Trading Bot - Strategy Performance</h1>
       </div>
     </div>
 
@@ -196,6 +196,28 @@
       <div id="content" class="hidden">
         <div class="card">
           <h2 id="strategy-title">Strategy Details</h2>
+
+          <!-- Strategy Description -->
+          <div
+            id="strategy-description"
+            class="hidden"
+            style="
+              background: #e3f2fd;
+              padding: 15px 20px;
+              border-radius: 8px;
+              margin: 20px 0;
+              border-left: 4px solid #2196f3;
+            "
+          >
+            <p
+              style="
+                margin: 0;
+                font-size: 15px;
+                line-height: 1.6;
+                color: #1565c0;
+              "
+            ></p>
+          </div>
 
           <div class="metrics">
             <div class="metric metric-primary">
@@ -230,7 +252,7 @@
 
           <!-- Portfolio Chart -->
           <div class="card">
-            <h3>📊 Portfolio-Entwicklung über Zeit</h3>
+            <h3>Portfolio-Entwicklung über Zeit</h3>
             <div class="chart-container">
               <canvas id="portfolio-chart"></canvas>
             </div>
@@ -268,6 +290,14 @@
       function displayStrategy(data) {
           // Update metrics
           document.getElementById('strategy-title').textContent = data.strategy_name;
+
+          // Display description if available
+          if (data.description && data.description.trim()) {
+              const descElement = document.getElementById('strategy-description');
+              descElement.querySelector('p').textContent = data.description;
+              descElement.classList.remove('hidden');
+          }
+
           document.getElementById('final-value').textContent = formatMoney(data.final_value);
           document.getElementById('return-pct').textContent = `${data.return_percentage.toFixed(2)}%`;
           document.getElementById('profit-loss').textContent = formatMoney(data.profit_loss);
@@ -297,12 +327,9 @@
           const ctx = document.getElementById('portfolio-chart').getContext('2d');
 
           // Create labels
-          const labels = data.portfolio_values.map((_, index) => {
-              if (data.trade_history && data.trade_history[index]) {
-                  return data.trade_history[index].date;
-              }
-              return `Tag ${index + 1}`;
-          });
+          // Create labels - show every ~30th day to keep it clean
+          const totalDays = data.portfolio_values.length;
+          const labels = data.portfolio_values.map((_, index) => `Tag ${index + 1}`);
 
           // Color based on performance
           const isPositive = data.return_percentage > 0;
@@ -357,14 +384,17 @@
                               display: false
                           },
                           ticks: {
-                              maxTicksLimit: 12,
+                              maxTicksLimit: 20,
                               autoSkip: true,
+                              maxRotation: 0,
+                              minRotation: 0,
                               color: '#666'
                           }
                       },
                       y: {
                           display: true,
                           beginAtZero: false,
+                          grace: '5%',
                           grid: {
                               color: 'rgba(0, 0, 0, 0.05)'
                           },

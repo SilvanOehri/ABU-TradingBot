@@ -211,15 +211,15 @@
         // For demo purposes, we'll show the standard strategies
         // In a real implementation, this would come from the backend
         availableStrategies = [
-          { id: 0, name: "📊 RSI", color: "#FF6384" },
-          { id: 1, name: "📈 SMA", color: "#36A2EB" },
-          { id: 2, name: "⚡ EMA", color: "#FFCE56" },
-          { id: 3, name: "🎯 MACD", color: "#4BC0C0" },
-          { id: 4, name: "🔔 Bollinger", color: "#9966FF" },
-          { id: 5, name: "📡 Stochastic", color: "#FF9F40" },
-          { id: 6, name: "🚀 Momentum", color: "#FF6384" },
-          { id: 7, name: "🔄 Mean Reversion", color: "#36A2EB" },
-          { id: 8, name: "💎 Buy & Hold", color: "#FFCE56" },
+          { id: 0, name: "RSI", color: "#FF6384" },
+          { id: 1, name: "SMA", color: "#36A2EB" },
+          { id: 2, name: "EMA", color: "#FFCE56" },
+          { id: 3, name: "MACD", color: "#4BC0C0" },
+          { id: 4, name: "Bollinger", color: "#9966FF" },
+          { id: 5, name: "Stochastic", color: "#FF9F40" },
+          { id: 6, name: "Momentum", color: "#FF6384" },
+          { id: 7, name: "Mean Reversion", color: "#36A2EB" },
+          { id: 8, name: "Buy & Hold", color: "#FFCE56" },
         ];
 
         displayStrategySelection();
@@ -324,24 +324,19 @@
           portfolioChart.destroy();
         }
 
-        const colors = [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FF9F40",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-        ];
-
         const datasets = strategies.map((strategy, index) => {
+          // Grün für positive, Rot für negative Rendite
+          const isPositive = strategy.return_percentage > 0;
+          const lineColor = isPositive ? "#22c55e" : "#ef4444";
+          const bgColor = isPositive
+            ? "rgba(34, 197, 94, 0.1)"
+            : "rgba(239, 68, 68, 0.1)";
+
           return {
             label: strategy.strategy_name,
             data: strategy.portfolio_values,
-            borderColor: colors[index % colors.length],
-            backgroundColor: colors[index % colors.length] + "20",
+            borderColor: lineColor,
+            backgroundColor: bgColor,
             borderWidth: 2,
             fill: false,
             tension: 0.1,
@@ -353,7 +348,7 @@
           data: {
             labels: Array.from(
               { length: strategies[0].portfolio_values.length },
-              (_, i) => i + 1
+              (_, i) => `Tag ${i + 1}`
             ),
             datasets: datasets,
           },
@@ -396,12 +391,20 @@
                   display: true,
                   text: "Handelstage",
                 },
+                ticks: {
+                  maxTicksLimit: 20,
+                  autoSkip: true,
+                  maxRotation: 0,
+                  minRotation: 0,
+                },
               },
               y: {
                 title: {
                   display: true,
                   text: "Portfolio Wert ($)",
                 },
+                beginAtZero: false,
+                grace: "5%",
                 ticks: {
                   callback: function (value) {
                     return "$" + value.toLocaleString("de-DE");
@@ -453,7 +456,7 @@
         }
 
         const colors = strategies.map((s) =>
-          s.return_percentage > 0 ? "#4BC0C0" : "#FF6384"
+          s.return_percentage > 0 ? "#22c55e" : "#ef4444"
         );
 
         returnChart = new Chart(ctx, {

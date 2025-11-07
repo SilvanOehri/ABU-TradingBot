@@ -14,7 +14,12 @@ class RSIStrategy(BaseStrategy):
     """
     
     def __init__(self, rsi_period: int = 14, oversold: float = 30, overbought: float = 70):
-        super().__init__("RSI", "📊")
+        super().__init__(
+            "RSI",
+            description="Der RSI (Relative Strength Index) misst die Stärke von Preisbewegungen. "
+                       "Kauft wird, wenn der Wert unter 30 fällt (überverkauft = günstiger Einstieg). "
+                       "Verkauft wird bei über 70 (überkauft = Zeit zu verkaufen)."
+        )
         self.rsi_period = rsi_period
         self.oversold = oversold
         self.overbought = overbought

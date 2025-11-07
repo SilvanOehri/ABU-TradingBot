@@ -25,6 +25,7 @@ class TradeRecord:
 class BacktestResult:
     """Ergebnis eines Backtests"""
     strategy_name: str
+    description: str
     initial_capital: float
     final_value: float
     return_percentage: float
@@ -144,6 +145,7 @@ class BacktestEngine:
         
         return BacktestResult(
             strategy_name=strategy.get_display_name(),
+            description=strategy.description,
             initial_capital=self.initial_capital,
             final_value=final_value,
             return_percentage=return_pct,

@@ -10,7 +10,11 @@ class EMAStrategy(BaseStrategy):
     """EMA Crossover Strategie"""
     
     def __init__(self, short_period: int = 12, long_period: int = 26):
-        super().__init__("EMA", "⚡")
+        super().__init__(
+            "EMA",
+            description="EMA (Exponential Moving Average) funktioniert wie SMA, reagiert aber schneller auf neue Preise. "
+                       "Kauft bei steigendem Trend, verkauft bei fallendem. Besser für volatile Märkte."
+        )
         self.short_period = short_period
         self.long_period = long_period
     
@@ -32,7 +36,12 @@ class MACDStrategy(BaseStrategy):
     """MACD Strategie"""
     
     def __init__(self, fast: int = 12, slow: int = 26):
-        super().__init__("MACD", "🎯")
+        super().__init__(
+            "MACD",
+            description="MACD (Moving Average Convergence Divergence) zeigt Trendwechsel an. "
+                       "Wenn die MACD-Linie nach oben kreuzt, ist das ein Kaufsignal. "
+                       "Kreuzt sie nach unten, wird verkauft. Gut für Trendfolge."
+        )
         self.fast = fast
         self.slow = slow
     
@@ -53,7 +62,12 @@ class BollingerStrategy(BaseStrategy):
     """Bollinger Bands Strategie"""
     
     def __init__(self, period: int = 20, std_dev: float = 2):
-        super().__init__("Bollinger", "🔔")
+        super().__init__(
+            "Bollinger",
+            description="Bollinger Bands zeigen einen 'Kanal' um den Durchschnittspreis. "
+                       "Wenn der Preis das untere Band berührt, ist es günstig (kaufen). "
+                       "Beim oberen Band ist es teuer (verkaufen). Nutzt Volatilität aus."
+        )
         self.period = period
         self.std_dev = std_dev
     
@@ -75,7 +89,12 @@ class StochasticStrategy(BaseStrategy):
     """Stochastic Oscillator Strategie"""
     
     def __init__(self, period: int = 14, oversold: float = 20, overbought: float = 80):
-        super().__init__("Stochastic", "📡")
+        super().__init__(
+            "Stochastic",
+            description="Stochastic Oscillator vergleicht den aktuellen Preis mit der Preisspanne. "
+                       "Unter 20 = überverkauft, Zeit zum Kaufen. "
+                       "Über 80 = überkauft, Zeit zum Verkaufen. Ähnlich wie RSI."
+        )
         self.period = period
         self.oversold = oversold
         self.overbought = overbought
@@ -96,8 +115,15 @@ class StochasticStrategy(BaseStrategy):
 class MomentumStrategy(BaseStrategy):
     """Momentum Strategie"""
     
-    def __init__(self, period: int = 10, threshold: float = 5):
-        super().__init__("Momentum", "🚀")
+    def __init__(self, period: int = 20, threshold: float = 2.0):
+        super().__init__(
+            "Momentum",
+            description="Momentum misst, wie schnell sich der Preis verändert. "
+                       "Steigt der Preis stark = kaufen (Trend ist dein Freund). "
+                       "Fällt der Preis stark = verkaufen. Basiert auf der Idee: Was steigt, steigt weiter."
+        )
+        self.period = period
+        self.threshold = threshold
         self.period = period
         self.threshold = threshold
     
@@ -117,8 +143,13 @@ class MomentumStrategy(BaseStrategy):
 class MeanReversionStrategy(BaseStrategy):
     """Mean Reversion Strategie"""
     
-    def __init__(self, period: int = 20, threshold: float = 10):
-        super().__init__("Mean Reversion", "🔄")
+    def __init__(self, period: int = 20, threshold: float = 2.5):
+        super().__init__(
+            "Mean Reversion",
+            description="Mean Reversion geht davon aus, dass Preise zum Durchschnitt zurückkehren. "
+                       "Ist der Preis weit unter dem Durchschnitt = kaufen (wird wieder steigen). "
+                       "Weit darüber = verkaufen (wird wieder fallen). Gegenstrategie zu Momentum."
+        )
         self.period = period
         self.threshold = threshold
     
