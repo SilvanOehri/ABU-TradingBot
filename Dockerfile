@@ -24,7 +24,7 @@ COPY . .
 EXPOSE $PORT
 
 # Environment variables
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/src
 ENV PYTHONUNBUFFERED=1
 
 # Health check
