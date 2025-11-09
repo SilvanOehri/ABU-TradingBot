@@ -57,8 +57,8 @@ class TradingBotAPI:
             self.period = f"{backtest_days}d"
             self.initial_capital = config_data.get('initial_capital', 100000)
             
-            logger.info(f"🚀 Starte Backtest für {self.symbol}")
-            logger.info(f"📊 Parameter: {backtest_days} Tage, ${self.initial_capital} Startkapital")
+            logger.info(f" Starte Backtest für {self.symbol}")
+            logger.info(f" Parameter: {backtest_days} Tage, ${self.initial_capital} Startkapital")
             
             # Create config object
             config = TradingConfig(
@@ -68,21 +68,21 @@ class TradingBotAPI:
             )
             
             # Get market data
-            logger.info(f"📥 Lade Marktdaten für {config.symbol}...")
+            logger.info(f" Lade Marktdaten für {config.symbol}...")
             data_provider = DataProvider()
             
             try:
                 prices = data_provider.get_stock_data(config.symbol, backtest_days)
-                logger.info(f"✅ {len(prices)} Preise erfolgreich geladen")
+                logger.info(f" {len(prices)} Preise erfolgreich geladen")
             except Exception as data_error:
-                logger.error(f"❌ Fehler beim Laden der Marktdaten: {str(data_error)}")
+                logger.error(f" Fehler beim Laden der Marktdaten: {str(data_error)}")
                 return {
                     'success': False,
                     'error': f'Fehler beim Laden der Marktdaten: {str(data_error)}'
                 }
             
             if len(prices) < 100:
-                logger.warning(f"⚠️ Zu wenig Daten: {len(prices)} < 100")
+                logger.warning(f" Zu wenig Daten: {len(prices)} < 100")
                 return {
                     'success': False,
                     'error': f'Nicht genügend Marktdaten verfügbar ({len(prices)} Tage, mindestens 100 erforderlich)'
@@ -100,7 +100,7 @@ class TradingBotAPI:
                 result = backtest_engine.run_backtest(strategy, prices)
                 
                 # DEBUG: Log the result details
-                logger.info(f"  ✅ {strategy.__class__.__name__}: Final=${result.final_value:.2f}, Return={result.return_percentage:.2f}%, Trades={result.total_trades}")
+                logger.info(f"   {strategy.__class__.__name__}: Final=${result.final_value:.2f}, Return={result.return_percentage:.2f}%, Trades={result.total_trades}")
                 
                 # Assign strategy ID
                 result.id = len(results)
@@ -175,17 +175,17 @@ def strategy_details(strategy_id):
 
 @app.route('/strategy/<int:strategy_id>/fast')
 def strategy_details_fast(strategy_id):
-    """⚡ ULTRA FAST Strategy details page - INSTANT LOADING"""
+    """ ULTRA FAST Strategy details page - INSTANT LOADING"""
     return render_template('strategy_details_fast.html', strategy_id=strategy_id)
 
 @app.route('/strategy/<int:strategy_id>/chart')
 def strategy_chart(strategy_id):
-    """📈 Strategy Chart View - NUR CHARTS"""
+    """ Strategy Chart View - NUR CHARTS"""
     return render_template('strategy_chart.html', strategy_id=strategy_id)
 
 @app.route('/compare')
 def compare_strategies():
-    """📊 Strategy Comparison Page"""
+    """ Strategy Comparison Page"""
     return render_template('strategy_comparison.html')
 
 # API Routes
@@ -218,7 +218,7 @@ def api_backtest():
 
 @app.route('/api/strategy/<int:strategy_id>', methods=['GET'])
 def api_get_strategy_details(strategy_id):
-    """⚡ API mit ECHTEN 5-Jahre Backtest-Daten"""
+    """ API mit ECHTEN 5-Jahre Backtest-Daten"""
     
     try:
         # Prüfe ob Backtest-Ergebnisse vorhanden sind
@@ -329,9 +329,9 @@ def api_get_strategy_details(strategy_id):
             }
         }
         
-        logger.info(f"✅ Echte Daten für {result.strategy_name}: {len(trade_history)} Tage, {result.total_trades} Trades, {result.return_percentage:.2f}% Rendite")
-        logger.info(f"🔍 DEBUG: Strategy ID {strategy_id} → Final: ${result.final_value:.2f}, Return: {result.return_percentage:.2f}%")
-        logger.info(f"🔍 DEBUG: Calculated return: {((result.final_value - result.initial_capital) / result.initial_capital) * 100:.2f}%")
+        logger.info(f" Echte Daten für {result.strategy_name}: {len(trade_history)} Tage, {result.total_trades} Trades, {result.return_percentage:.2f}% Rendite")
+        logger.info(f" DEBUG: Strategy ID {strategy_id} → Final: ${result.final_value:.2f}, Return: {result.return_percentage:.2f}%")
+        logger.info(f" DEBUG: Calculated return: {((result.final_value - result.initial_capital) / result.initial_capital) * 100:.2f}%")
         
         return jsonify({
             'success': True,
@@ -347,7 +347,7 @@ def api_get_strategy_details(strategy_id):
 
 @app.route('/api/compare', methods=['POST'])
 def api_compare_strategies():
-    """📊 Compare multiple strategies"""
+    """ Compare multiple strategies"""
     try:
         data = request.json
         strategy_ids = data.get('strategy_ids', [])
@@ -429,14 +429,14 @@ if __name__ == '__main__':
     # Use PORT from environment (for deployment) or default to 8081
     port = int(os.environ.get('PORT', 8081))
     
-    # Check if running in production (Railway sets RAILWAY_ENVIRONMENT)
-    is_production = os.environ.get('RAILWAY_ENVIRONMENT') is not None
+    # Check if running in production
+    is_production = os.environ.get('RENDER') is not None
     
-    print("🤖 Trading Bot mit ECHTEN 5-Jahre Backtest-Daten")
+    print("Trading Bot - 5 Year Backtest Data")
     print(f"Dashboard: http://localhost:{port}")
-    print("Führe zuerst einen Backtest durch, dann siehst du ALLE echten Trades!")
+    print("Run backtest first to see all trading results")
     
     if is_production:
-        print("🚂 Running on Railway (Production Mode)")
+        print("Running on Render (Production Mode)")
     
     app.run(debug=not is_production, host='0.0.0.0', port=port)

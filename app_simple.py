@@ -232,6 +232,6 @@ def api_health():
 
 if __name__ == '__main__':
     print("🚀 Starte vereinfachten Trading Bot...")
-    print("📊 Dashboard: http://localhost:8080")
+    print(" Dashboard: http://localhost:8080")
     print("⚡ Strategy Details: http://localhost:8080/strategy/0/fast")
     app.run(debug=True, host='0.0.0.0', port=8080)

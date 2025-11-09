@@ -303,9 +303,9 @@ def get_stock_data(symbol, days):
         if len(prices) < 30:
             raise ValueError(f"Nicht genügend Daten: {len(prices)} Tage")
         
-        print(f"✅ {len(prices)} Tage Daten für {symbol} geladen")
-        print(f"📊 Preisbereich: ${min(prices):.2f} - ${max(prices):.2f}")
-        print(f"📊 Startpreis: ${prices[0]:.2f}, Endpreis: ${prices[-1]:.2f}")
+        print(f"Successfully loaded {len(prices)} days of data for {symbol}")
+        print(f"Price range: ${min(prices):.2f} - ${max(prices):.2f}")
+        print(f"Start: ${prices[0]:.2f}, End: ${prices[-1]:.2f}")
         return prices
         
     except Exception as e:
@@ -314,7 +314,7 @@ def get_stock_data(symbol, days):
 def main():
     """Hauptfunktion"""
     try:
-        print("🤖 TRADING BOT GESTARTET")
+        print("TRADING BOT GESTARTET")
         print("="*50)
         print(f"Symbol: {SYMBOL}")
         print(f"Zeitraum: {BACKTEST_DAYS} Tage")
@@ -322,7 +322,7 @@ def main():
         print("="*50)
         
         # Daten laden
-        print("\n📊 Lade Marktdaten...")
+        print("\nLade Marktdaten...")
         prices = get_stock_data(SYMBOL, BACKTEST_DAYS)
         
         # Zeitraum für Ausgabe
@@ -331,15 +331,15 @@ def main():
         
         # Alle Strategien definieren
         strategies = [
-            ("📊 RSI", rsi_strategy),
-            ("📈 SMA", sma_strategy),
-            ("⚡ EMA", ema_strategy),
-            ("🎯 MACD", macd_strategy),
-            ("🔔 Bollinger", bollinger_strategy),
-            ("📡 Stochastic", stochastic_strategy),
-            ("🚀 Momentum", momentum_strategy),
-            ("🔄 Mean Reversion", mean_reversion_strategy),
-            ("💎 Buy & Hold", buy_and_hold_strategy)
+            ("RSI", rsi_strategy),
+            ("SMA", sma_strategy),
+            ("EMA", ema_strategy),
+            ("MACD", macd_strategy),
+            ("Bollinger", bollinger_strategy),
+            ("Stochastic", stochastic_strategy),
+            ("Momentum", momentum_strategy),
+            ("Mean Reversion", mean_reversion_strategy),
+            ("Buy & Hold", buy_and_hold_strategy)
         ]
         
         results = []
@@ -360,7 +360,7 @@ def main():
         
         # Ausgabe
         print("\n" + "="*80)
-        print("🤖 TRADING BOT BACKTESTING ERGEBNISSE - ALLE STRATEGIEN")
+        print("TRADING BOT BACKTESTING ERGEBNISSE - ALLE STRATEGIEN")
         print("="*80)
         
         print(f"\nSymbol: {SYMBOL}")
@@ -374,19 +374,19 @@ def main():
         results.sort(key=lambda x: x['return'], reverse=True)
         
         for i, result in enumerate(results):
-            emoji = "🏆" if i == 0 else "📈" if result['return'] > 0 else "📉"
-            print(f"{emoji} {result['name']:<18} ${result['final']:>12,.2f} {result['return']:>8.2f}% {result['trades']:>6}")
+            emoji = "TOP" if i == 0 else "+" if result['return'] > 0 else "-"
+            print(f"[{emoji}] {result['name']:<18} ${result['final']:>12,.2f} {result['return']:>8.2f}% {result['trades']:>6}")
         
         # Beste Strategie
         best_strategy = results[0]
-        print(f"\n🏆 BESTE STRATEGIE: {best_strategy['name']} mit {best_strategy['return']:.2f}% Rendite!")
+        print(f"\n[BEST] BESTE STRATEGIE: {best_strategy['name']} mit {best_strategy['return']:.2f}% Rendite!")
         
         print("="*80)
         
-        print("\n✅ Backtesting erfolgreich abgeschlossen!")
+        print("\nBacktesting erfolgreich abgeschlossen!")
         
     except Exception as e:
-        print(f"\n❌ Fehler: {e}")
+        print(f"\nFehler: {e}")
         print("Mögliche Lösungen:")
         print("1. Internetverbindung prüfen")
         print("2. Anderes Symbol versuchen (z.B. AAPL)")

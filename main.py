@@ -86,7 +86,7 @@ class TradingBot:
     def run_analysis(self):
         """Führt die komplette Analyse durch"""
         try:
-            print("🤖 TRADING BOT GESTARTET (Modulare Version)")
+            print(" TRADING BOT GESTARTET (Modulare Version)")
             print("="*60)
             print(f"Symbol: {self.config.symbol}")
             print(f"Zeitraum: {self.config.backtest_days} Tage")
@@ -94,7 +94,7 @@ class TradingBot:
             print("="*60)
             
             # Daten laden
-            print("\n📊 Lade Marktdaten...")
+            print("\n Lade Marktdaten...")
             prices = self.data_provider.get_stock_data(
                 self.config.symbol, 
                 self.config.backtest_days
@@ -104,14 +104,14 @@ class TradingBot:
             strategies = self.create_strategies()
             
             # Backtesting durchführen
-            print(f"\n🔍 Teste {len(strategies)} Strategien...")
+            print(f"\n Teste {len(strategies)} Strategien...")
             results = self.backtest_engine.compare_strategies(strategies, prices)
             
             # Ergebnisse anzeigen
             self.display_results(results, prices)
             
         except Exception as e:
-            print(f"\n❌ Fehler: {e}")
+            print(f"\n Fehler: {e}")
             print("Mögliche Lösungen:")
             print("1. Internetverbindung prüfen")
             print("2. Anderes Symbol versuchen (z.B. AAPL)")
@@ -124,7 +124,7 @@ class TradingBot:
         start_date = end_date - timedelta(days=self.config.backtest_days)
         
         print("\n" + "="*80)
-        print("🤖 TRADING BOT BACKTESTING ERGEBNISSE - ALLE STRATEGIEN")
+        print(" TRADING BOT BACKTESTING ERGEBNISSE - ALLE STRATEGIEN")
         print("="*80)
         
         print(f"\nSymbol: {self.config.symbol}")
@@ -135,7 +135,7 @@ class TradingBot:
         print("-" * 65)
         
         for i, result in enumerate(results):
-            emoji = "🏆" if i == 0 else "📈" if result.return_percentage > 0 else "📉"
+            emoji = "🏆" if i == 0 else "" if result.return_percentage > 0 else "📉"
             print(f"{emoji} {result.strategy_name:<18} ${result.final_value:>12,.2f} "
                   f"{result.return_percentage:>8.2f}% {result.total_trades:>6}")
         
@@ -146,11 +146,11 @@ class TradingBot:
         
         # Performance-Statistiken
         positive_strategies = [r for r in results if r.return_percentage > 0]
-        print(f"📊 {len(positive_strategies)}/{len(results)} Strategien "
+        print(f" {len(positive_strategies)}/{len(results)} Strategien "
               f"waren profitabel")
         
         print("="*80)
-        print("\n✅ Backtesting erfolgreich abgeschlossen!")
+        print("\n Backtesting erfolgreich abgeschlossen!")
 
 def main():
     """Hauptfunktion"""

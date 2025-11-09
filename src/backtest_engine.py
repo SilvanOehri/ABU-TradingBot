@@ -107,7 +107,7 @@ class BacktestEngine:
                     portfolio_value=current_value
                 ))
                 if debug_mode:
-                    print(f"DEBUG: ✅ BUY executed! Bought {shares_to_buy:.4f} shares at ${price:.2f}")
+                    print(f"DEBUG:  BUY executed! Bought {shares_to_buy:.4f} shares at ${price:.2f}")
             elif signal == 'sell' and shares > 0:
                 shares_before = shares
                 capital_before = capital
@@ -128,7 +128,7 @@ class BacktestEngine:
                     portfolio_value=current_value
                 ))
                 if debug_mode:
-                    print(f"DEBUG: ✅ SELL executed! Sold {shares:.4f} shares at ${price:.2f}")
+                    print(f"DEBUG:  SELL executed! Sold {shares:.4f} shares at ${price:.2f}")
                 shares = 0
             
             # Track portfolio value each day

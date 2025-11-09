@@ -1,59 +1,58 @@
-# Trading Bot - Vercel Deployment
+# Trading Bot Deployment auf Render.com
 
-## Deployment zu Vercel
+## Schnellstart
 
-### Voraussetzungen
-- GitHub Account
-- Vercel Account (https://vercel.com)
+1. Gehe zu [Render.com](https://render.com) und melde dich mit GitHub an
 
-### Schritte
+2. Klicke auf "New" → "Web Service"
 
-1. **Code zu GitHub pushen:**
-```bash
-cd /Users/silvan/School/ABU-Tradingbot/trading-bot
-git add .
-git commit -m "Prepare for Vercel deployment"
-git push origin main
+3. Wähle dein Repository: `SilvanOehri/ABU-TradingBot`
+
+4. Konfiguration:
+   - **Name**: `trading-bot`
+   - **Region**: Frankfurt (EU Central)
+   - **Branch**: `main`
+   - **Root Directory**: `trading-bot`
+   - **Runtime**: Python 3
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python app_real_data.py`
+   - **Instance Type**: Free
+
+5. Klicke auf "Create Web Service"
+
+## Fertig!
+
+Deine App wird automatisch deployed und ist unter der URL erreichbar:
+```
+https://trading-bot-XXXX.onrender.com
 ```
 
-2. **Vercel Deployment:**
-   - Gehe zu https://vercel.com/new
-   - Klicke "Import Git Repository"
-   - Wähle `SilvanOehri/ABU-TradingBot`
-   - Vercel erkennt automatisch die `vercel.json` Konfiguration
-   - Klicke "Deploy"
+## Features
 
-3. **Fertig!** 
-   - Vercel gibt dir eine URL wie: `https://abu-tradingbot.vercel.app`
+- Automatisches Deployment bei Git Push
+- HTTPS inklusive
+- 512 MB RAM (genug für die App)
+- Bessere Yahoo Finance Kompatibilität
+- Kostenlos für Hobby-Projekte
 
-### Lokale Entwicklung
+## Lokale Entwicklung
 
 ```bash
-# Installiere Dependencies
+cd trading-bot
 pip install -r requirements.txt
-
-# Starte die App
 python app_real_data.py
 ```
 
-Die App läuft dann auf: http://localhost:8081
+Öffne: http://localhost:8081
 
-### Wichtige Dateien für Vercel
+## Troubleshooting
 
-- `vercel.json` - Vercel Konfiguration
-- `api/index.py` - Vercel Serverless Function Entry Point
-- `runtime.txt` - Python Version
-- `requirements.txt` - Python Dependencies
+**Problem: "Application failed to respond"**
+- Lösung: Warte 2-3 Minuten nach dem ersten Deployment
 
-### Troubleshooting
+**Problem: "Keine Daten für Symbol"**
+- Lösung: Verwende BTC-USD, AAPL, MSFT oder ETH-USD
 
-**Problem: "Module not found"**
-- Stelle sicher, dass alle Dependencies in `requirements.txt` sind
-
-**Problem: "Cold start timeout"**
-- Vercel Serverless Functions haben ein 10s Timeout
-- Backtest könnte zu lange dauern für große Zeiträume
-- Erwäge Redis/Cache für vorberechnete Ergebnisse
-
-**Problem: "Static files not found"**
-- Stelle sicher, dass `templates/` und `static/` Ordner im Repository sind
+**Problem: "Build failed"**
+- Lösung: Prüfe dass alle Dateien committed sind
+- Stelle sicher dass requirements.txt korrekt ist
