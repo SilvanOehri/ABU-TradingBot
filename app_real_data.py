@@ -37,7 +37,8 @@ def after_request(response):
 
 class TradingBotAPI:
     def __init__(self):
-        self.symbol = 'BTC-USD'
+        # Use a more reliable default symbol
+        self.symbol = 'AAPL'  # Apple is more reliable than crypto
         self.period = '5y'
         self.initial_capital = 100000
         self.cached_results = None
@@ -60,7 +61,7 @@ class TradingBotAPI:
         """Run backtest with given configuration"""
         try:
             # Update configuration
-            self.symbol = config_data.get('symbol', 'BTC-USD')
+            self.symbol = config_data.get('symbol', 'AAPL')  # More reliable default
             backtest_days = config_data.get('backtest_days', 1825)
             self.period = f"{backtest_days}d"
             self.initial_capital = config_data.get('initial_capital', 100000)
@@ -84,10 +85,29 @@ class TradingBotAPI:
                 logger.info(f" {len(prices)} Preise erfolgreich geladen")
             except Exception as data_error:
                 logger.error(f" Fehler beim Laden der Marktdaten: {str(data_error)}")
-                return {
-                    'success': False,
-                    'error': f'Fehler beim Laden der Marktdaten: {str(data_error)}'
-                }
+                
+                # Try fallback symbols if the requested one fails
+                fallback_symbols = ['AAPL', 'MSFT', 'SPY', 'TSLA']
+                prices = None
+                
+                for fallback in fallback_symbols:
+                    if fallback != config.symbol:  # Don't try the same symbol again
+                        try:
+                            logger.info(f" Trying fallback symbol: {fallback}")
+                            prices = data_provider.get_stock_data(fallback, backtest_days)
+                            self.symbol = fallback
+                            config.symbol = fallback
+                            logger.info(f" Successfully loaded data for fallback symbol: {fallback}")
+                            break
+                        except Exception as fb_error:
+                            logger.warning(f" Fallback {fallback} also failed: {str(fb_error)}")
+                            continue
+                
+                if prices is None:
+                    return {
+                        'success': False,
+                        'error': f'Fehler beim Laden der Marktdaten für {config_data.get("symbol", "AAPL")} und alle Fallback-Symbole: {str(data_error)}'
+                    }
             
             if len(prices) < 100:
                 logger.warning(f" Zu wenig Daten: {len(prices)} < 100")
@@ -411,13 +431,14 @@ def api_compare_strategies():
 def api_get_symbols():
     """Get available trading symbols"""
     symbols = [
-        {'symbol': 'BTC-USD', 'name': 'Bitcoin', 'type': 'Crypto'},
-        {'symbol': 'ETH-USD', 'name': 'Ethereum', 'type': 'Crypto'},
         {'symbol': 'AAPL', 'name': 'Apple Inc.', 'type': 'Stock'},
         {'symbol': 'MSFT', 'name': 'Microsoft Corporation', 'type': 'Stock'},
         {'symbol': 'TSLA', 'name': 'Tesla Inc.', 'type': 'Stock'},
         {'symbol': 'NVDA', 'name': 'NVIDIA Corporation', 'type': 'Stock'},
-        {'symbol': 'SPY', 'name': 'SPDR S&P 500 ETF', 'type': 'ETF'}
+        {'symbol': 'SPY', 'name': 'SPDR S&P 500 ETF', 'type': 'ETF'},
+        {'symbol': 'QQQ', 'name': 'Invesco QQQ ETF', 'type': 'ETF'},
+        {'symbol': 'BTC-USD', 'name': 'Bitcoin', 'type': 'Crypto'},
+        {'symbol': 'ETH-USD', 'name': 'Ethereum', 'type': 'Crypto'},
     ]
     return jsonify({
         'success': True,

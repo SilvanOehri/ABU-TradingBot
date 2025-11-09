@@ -1,40 +1,57 @@
 #!/usr/bin/env python3
 """
-Test script for DataProvider to verify it works correctly
+Test script for the improved DataProvider class
 """
 
 import sys
 import os
 
-# Add the project root to Python path
+# Add project root to path
 project_root = os.path.dirname(os.path.abspath(__file__))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+sys.path.insert(0, project_root)
 
-try:
-    from src.data_provider import DataProvider
-    print("✓ Successfully imported DataProvider")
+from src.data_provider import DataProvider
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(name)s:%(message)s')
+
+def test_data_provider():
+    """Test the DataProvider with various symbols"""
     
-    # Test creating an instance
-    provider = DataProvider()
-    print("✓ Successfully created DataProvider instance")
+    dp = DataProvider()
     
-    # Test fetching some data (small amount for quick test)
-    print("\nTesting data fetch...")
-    try:
-        prices = provider.get_stock_data("BTC-USD", 30)  # 30 days of data
-        print(f"✓ Successfully fetched {len(prices)} days of BTC-USD data")
-        print(f"  Price range: ${min(prices):.2f} - ${max(prices):.2f}")
-        print(f"  Latest price: ${prices[-1]:.2f}")
-    except Exception as e:
-        print(f"✗ Error fetching data: {e}")
+    test_symbols = [
+        'BTC-USD',
+        'AAPL', 
+        'MSFT',
+        'INVALID-SYMBOL',
+        'SPY'
+    ]
     
-    print("\n✓ DataProvider tests completed successfully!")
+    print("Testing DataProvider with improved error handling...")
+    print("="*60)
     
-except ImportError as e:
-    print(f"✗ Import error: {e}")
-    print("Make sure yfinance is installed: pip install yfinance")
-    sys.exit(1)
-except Exception as e:
-    print(f"✗ Unexpected error: {e}")
-    sys.exit(1)
+    for symbol in test_symbols:
+        print(f"\nTesting symbol: {symbol}")
+        print("-" * 30)
+        
+        # Test symbol validation
+        is_valid = dp.validate_symbol(symbol)
+        print(f"Symbol validation: {'VALID' if is_valid else 'INVALID'}")
+        
+        if is_valid:
+            try:
+                # Test data fetching
+                prices = dp.get_stock_data(symbol, 100)
+                print(f"✓ Successfully loaded {len(prices)} prices")
+                print(f"  Price range: ${min(prices):.2f} - ${max(prices):.2f}")
+                print(f"  Latest price: ${prices[-1]:.2f}")
+                
+            except Exception as e:
+                print(f"✗ Failed to load data: {e}")
+        else:
+            print("⚠ Skipping data fetch for invalid symbol")
+
+if __name__ == "__main__":
+    test_data_provider()
