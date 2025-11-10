@@ -64,8 +64,8 @@ class TradingBotAPI:
             self.period = f"{backtest_days}d"
             self.initial_capital = config_data.get('initial_capital', 100000)
             
-            logger.info(f"🚀 Starting backtest for {self.symbol}")
-            logger.info(f"📊 Parameters: {backtest_days} days, ${self.initial_capital} initial capital")
+            logger.info(f"🤖 Starting backtest for {self.symbol}")
+            logger.info(f"Parameters: {backtest_days} days, ${self.initial_capital} initial capital")
             
             # Create config object
             config = TradingConfig(
@@ -75,7 +75,7 @@ class TradingBotAPI:
             )
             
             # Get market data
-            logger.info(f"📈 Loading market data for {config.symbol}...")
+            logger.info(f"Loading market data for {config.symbol}...")
             data_provider = DataProvider()
             
             # Try multiple fallback symbols if the primary one fails
@@ -88,7 +88,7 @@ class TradingBotAPI:
                     logger.info(f"Trying symbol: {symbol}")
                     prices = data_provider.get_stock_data(symbol, backtest_days)
                     working_symbol = symbol
-                    logger.info(f"✅ Successfully loaded {len(prices)} prices for {symbol}")
+                    logger.info(f"Successfully loaded {len(prices)} prices for {symbol}")
                     break
                 except Exception as data_error:
                     logger.warning(f"Failed to load {symbol}: {str(data_error)}")
@@ -107,7 +107,7 @@ class TradingBotAPI:
                 config.symbol = working_symbol
             
             if len(prices) < 100:
-                logger.warning(f"⚠️ Nicht genügend Daten: {len(prices)} < 100")
+                logger.warning(f"Nicht genügend Daten: {len(prices)} < 100")
                 return {
                     'success': False,
                     'error': f'Unzureichende Marktdaten ({len(prices)} Tage, mindestens 100 erforderlich)'
@@ -121,10 +121,10 @@ class TradingBotAPI:
             results = []
             
             for strategy in self.strategies:
-                logger.info(f"🔄 Running backtest for {strategy.__class__.__name__}")
+                logger.info(f"Running backtest for {strategy.__class__.__name__}")
                 result = backtest_engine.run_backtest(strategy, prices)
                 
-                logger.info(f"📊 {strategy.__class__.__name__}: Final=${result.final_value:.2f}, Return={result.return_percentage:.2f}%, Trades={result.total_trades}")
+                logger.info(f"{strategy.__class__.__name__}: Final=${result.final_value:.2f}, Return={result.return_percentage:.2f}%, Trades={result.total_trades}")
                 
                 result.id = len(results)
                 results.append(result)
@@ -142,7 +142,7 @@ class TradingBotAPI:
             # Convert results to dict format for JSON response
             results_data = []
             for i, result in enumerate(results):
-                logger.info(f"📊 Dashboard: Strategy {i} = {result.strategy_name} with {result.return_percentage:.2f}% return")
+                logger.info(f"Dashboard: Strategy {i} = {result.strategy_name} with {result.return_percentage:.2f}% return")
                 results_data.append({
                     'id': result.id,
                     'strategy_name': result.strategy_name,
@@ -176,7 +176,7 @@ class TradingBotAPI:
             }
             
         except Exception as e:
-            logger.error(f"❌ Backtest error: {e}")
+            logger.error(f"Backtest error: {e}")
             return {
                 'success': False,
                 'error': str(e)
@@ -432,7 +432,7 @@ def api_get_symbols():
 def api_health():
     """Health Check Endpoint"""
     return jsonify({
-        'status': 'gesund ✅',
+        'status': 'gesund',
         'timestamp': datetime.now().isoformat(),
         'version': '5.0.0 - Vercel Deployment mit allen Features',
         'message': 'Trading Bot läuft auf Vercel mit allen Features!'
@@ -443,7 +443,7 @@ application = app
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8081))
-    print("🚀 Trading Bot - Vercel Edition mit allen Features")
-    print(f"📊 Dashboard: http://localhost:{port}")
-    print("💡 Alle Features wiederhergestellt: Details, Vergleich, Charts")
+    print("🤖 Trading Bot - Vercel Edition mit allen Features")
+    print(f"Dashboard: http://localhost:{port}")
+    print("Alle Features wiederhergestellt: Details, Vergleich, Charts")
     app.run(debug=True, host='0.0.0.0', port=port)
