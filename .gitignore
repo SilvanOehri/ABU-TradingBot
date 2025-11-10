@@ -19,15 +19,25 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Deployment
+# Old deployment files (removed)
+Dockerfile
+docker-compose.yml
+render.yaml
+app_*.py
+main.py
+simple_bot.py
+DEPLOYMENT.md
+DEPLOYMENT.pdf
+requirements-dev.txt
+requirements-full.txt
+test_data_provider.py
+README_OLD.md
+README.pdf
+.dockerignore
+
+# Vercel deployment
 .vercel
-.railway-env
-railway.json
-.railwayignore
-Procfile
-RAILWAY.md
 
 # Temp files
 *.log
-remove_emojis.py
 
