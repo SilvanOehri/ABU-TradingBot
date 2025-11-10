@@ -105,17 +105,17 @@ body {
 
 /* Performance Indicators */
 .performance-positive {
-    color: #28a745;
+    color: #000000;
     font-weight: bold;
 }
 
 .performance-negative {
-    color: #dc3545;
+    color: #000000;
     font-weight: bold;
 }
 
 .performance-neutral {
-    color: #6c757d;
+    color: #000000;
     font-weight: bold;
 }
 
