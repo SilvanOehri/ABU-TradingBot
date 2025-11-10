@@ -1,6 +1,6 @@
 """
 Data Provider for Trading Bot
-Provides realistic mock data for demo purposes - no external API calls
+Provides mock data for demo purposes since Yahoo Finance is unreliable in deployment
 """
 
 import logging
@@ -13,97 +13,12 @@ logger = logging.getLogger(__name__)
 
 class DataProvider:
     """
-    Provides market data using realistic mock data for reliable deployment
-    No external API calls - all data is generated locally
+    Provides market data - using mock data for reliable deployment
     """
     
     def __init__(self):
         """Initialize the data provider"""
-        logger.info("🎭 DataProvider initialized with mock data mode")
-    
-    def get_stock_data(self, symbol: str, days: int) -> List[float]:
-        """
-        Generate realistic mock stock/crypto data for demo purposes
-        
-        Args:
-            symbol: Trading symbol (e.g., 'BTC-USD', 'AAPL')
-            days: Number of days of historical data
-            
-        Returns:
-            List of closing prices (realistic mock data)
-        """
-        logger.info(f"🎭 Generating {days} days of mock data for {symbol}")
-        
-        # Base prices for different symbols
-        base_prices = {
-            'BTC-USD': 45000,
-            'ETH-USD': 2500, 
-            'AAPL': 180,
-            'MSFT': 350,
-            'TSLA': 220,
-            'NVDA': 450,
-            'SPY': 430,
-            'GOOGL': 140
-        }
-        
-        # Get base price (default to 100 if symbol not found)
-        base_price = base_prices.get(symbol.upper(), 100)
-        
-        # Use symbol hash as seed for consistent data
-        random.seed(abs(hash(symbol)) % 10000)
-        
-        prices = []
-        current_price = base_price
-        
-        # Different volatility for different asset types
-        if 'BTC' in symbol.upper() or 'ETH' in symbol.upper():
-            # Crypto: Higher volatility
-            daily_volatility = 0.04  # 4% average daily movement
-            trend = random.uniform(-0.0001, 0.0005)  # Slight upward bias
-        else:
-            # Stocks: Lower volatility  
-            daily_volatility = 0.02  # 2% average daily movement
-            trend = random.uniform(0.0001, 0.0003)  # Steady growth
-        
-        # Generate price history
-        for day in range(days):
-            # Apply trend
-            current_price *= (1 + trend)
-            
-            # Random daily movement
-            daily_change = random.gauss(0, daily_volatility)
-            current_price *= (1 + daily_change)
-            
-            # Market cycles (bull/bear periods)
-            cycle_factor = 0.1 * math.sin(2 * math.pi * day / 180) * daily_volatility
-            current_price *= (1 + cycle_factor)
-            
-            # Prevent unrealistic prices
-            current_price = max(current_price, base_price * 0.3)
-            current_price = min(current_price, base_price * 5.0)
-            
-            prices.append(round(current_price, 2))
-        
-        logger.info(f"✅ Generated {len(prices)} mock prices for {symbol}")
-        logger.info(f"📈 Range: ${min(prices):.2f} - ${max(prices):.2f}")
-        logger.info(f"📊 Start: ${prices[0]:.2f}, End: ${prices[-1]:.2f}")
-        
-        return prices
-    
-    def get_symbol_info(self, symbol: str) -> Dict[str, Any]:
-        """Get basic info about a symbol (mock data)"""
-        return {
-            'symbol': symbol,
-            'name': f"{symbol} (Demo)",
-            'sector': 'Demo Asset',
-            'currency': 'USD',
-            'market_cap': 1000000000,
-            'previous_close': 100
-        }
-    
-    def validate_symbol(self, symbol: str) -> bool:
-        """All symbols are valid in demo mode"""
-        return True
+        pass
     
     def get_stock_data(self, symbol: str, days: int) -> List[float]:
         """
