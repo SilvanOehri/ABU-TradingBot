@@ -245,7 +245,7 @@
 
       <!-- Error State -->
       <div id="error" class="error hidden">
-        <h3>⚠️ Fehler beim Laden</h3>
+        <h3>Fehler beim Laden</h3>
         <p id="error-message"></p>
       </div>
 
@@ -304,7 +304,7 @@
 
           <!-- Trade History -->
           <div class="card">
-            <h3>📊 Trade Historie - Nur echte Buy/Sell Trades</h3>
+            <h3>Trade Historie - Nur echte Buy/Sell Trades</h3>
             <p>
               <small
                 >Zeigt alle <span id="total-trades-text">0</span> echten Kauf-
@@ -441,7 +441,7 @@
           const allTradesRaw = data.trade_history || [];
           allTrades = allTradesRaw.filter(trade => trade.signal === 'buy' || trade.signal === 'sell');
 
-          console.log(`📊 Gefilterte Trades: ${allTrades.length} von ${allTradesRaw.length} Tagen (nur Buy/Sell)`);
+          console.log(`Gefilterte Trades: ${allTrades.length} von ${allTradesRaw.length} Tagen (nur Buy/Sell)`);
           displayTrades();          // SHOW CONTENT - HIDE LOADING
           document.getElementById('loading').className = 'loading hidden';
           document.getElementById('content').className = '';

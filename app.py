@@ -64,7 +64,7 @@ class TradingBotAPI:
             self.period = f"{backtest_days}d"
             self.initial_capital = config_data.get('initial_capital', 100000)
             
-            logger.info(f"🤖 Starting backtest for {self.symbol}")
+            logger.info(f"Starting backtest for {self.symbol}")
             logger.info(f"Parameters: {backtest_days} days, ${self.initial_capital} initial capital")
             
             # Create config object
@@ -86,9 +86,17 @@ class TradingBotAPI:
             for symbol in fallback_symbols:
                 try:
                     logger.info(f"Trying symbol: {symbol}")
-                    prices = data_provider.get_stock_data(symbol, backtest_days)
+                    result = data_provider.get_stock_data(symbol, backtest_days)
+                    
+                    # Handle tuple return (prices, source) from updated data_provider
+                    if isinstance(result, tuple):
+                        prices, data_source = result
+                    else:
+                        prices = result
+                        data_source = 'Unknown'
+                    
                     working_symbol = symbol
-                    logger.info(f"Successfully loaded {len(prices)} prices for {symbol}")
+                    logger.info(f"Successfully loaded {len(prices)} prices for {symbol} from {data_source}")
                     break
                 except Exception as data_error:
                     logger.warning(f"Failed to load {symbol}: {str(data_error)}")
@@ -163,6 +171,7 @@ class TradingBotAPI:
                     'results': results_data,
                     'market_data': {
                         'symbol': config.symbol,
+                        'data_source': data_source if 'data_source' in locals() else 'Unknown',
                         'start_price': prices[0],
                         'end_price': prices[-1],
                         'price_range': {
@@ -443,7 +452,7 @@ application = app
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8081))
-    print("🤖 Trading Bot - Vercel Edition mit allen Features")
+    print("Trading Bot - Vercel Edition mit allen Features")
     print(f"Dashboard: http://localhost:{port}")
     print("Alle Features wiederhergestellt: Details, Vergleich, Charts")
     app.run(debug=True, host='0.0.0.0', port=port)
