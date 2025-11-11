@@ -11,8 +11,6 @@ import time
 import requests
 import json
 import os
-import random
-import math
 
 logger = logging.getLogger(__name__)
 
@@ -182,6 +180,8 @@ class DataProvider:
     
     def _generate_realistic_fallback(self, symbol: str, days: int) -> List[float]:
         """Generate realistic fallback data based on current market conditions"""
+        import random
+        import math
         
         # Current real market prices (Nov 2025)
         current_prices = {
