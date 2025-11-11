@@ -1,19 +1,15 @@
 {
   "version": 2,
-  "functions": {
-    "app.py": {
-      "runtime": "@vercel/python",
-      "maxDuration": 30,
-      "memory": 512
-    }
-  },
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/app.py"
+      "src": "app.py",
+      "use": "@vercel/python@4.3.0"
     }
   ],
-  "env": {
-    "PYTHONPATH": "/var/task"
-  }
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/app.py"
+    }
+  ]
 }
