@@ -9,6 +9,7 @@ venv/
 ENV/
 *.egg-info/
 
+.env.local
 # IDEs
 .vscode/
 .idea/
