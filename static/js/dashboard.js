@@ -255,12 +255,13 @@ class TradingBotDashboard {
     }
 
     formatCurrency(value) {
-        return new Intl.NumberFormat('de-DE', {
-            style: 'currency',
-            currency: 'USD',
+        // Swiss formatting: apostrophe as thousands separator, dot as decimal, $ symbol after number
+        const formatted = new Intl.NumberFormat('de-CH', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(value);
+        
+        return `${formatted} $`;  // Dollar symbol AFTER the number (Swiss style)
     }
 }
 
