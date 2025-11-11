@@ -371,6 +371,12 @@
                           padding: 12,
                           displayColors: false,
                           callbacks: {
+                              title: function(context) {
+                                  const dayIndex = context[0].dataIndex;
+                                  const date = new Date();
+                                  date.setDate(date.getDate() - (context[0].dataset.data.length - 1 - dayIndex));
+                                  return `Tag ${dayIndex} - ${date.toLocaleDateString('de-CH')}`;
+                              },
                               label: function(context) {
                                   return 'Portfolio: ' + formatMoney(context.parsed.y);
                               }

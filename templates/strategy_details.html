@@ -369,6 +369,12 @@
                   plugins: {
                       tooltip: {
                           callbacks: {
+                              title: function(context) {
+                                  const dayIndex = context[0].dataIndex;
+                                  const date = new Date();
+                                  date.setDate(date.getDate() - (portfolioValues.length - 1 - dayIndex));
+                                  return `Tag ${dayIndex} - ${date.toLocaleDateString('de-CH')}`;
+                              },
                               label: function(context) {
                                   return `Portfolio: ${formatCurrency(context.parsed.y)}`;
                               }
